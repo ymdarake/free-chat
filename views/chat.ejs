@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Simple Connect</title>
+</head>
+
+<body>
+  <div>
+    <ul id="messages">
+    </ul>
+    <textarea id="message"></textarea>
+    <button id="send">send</button>
+  </div>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/javascript">
+    function start() {
+      function appendMessage(message) {
+        var messages = document.querySelector('#messages');
+        var m = document.createElement('li');
+        m.textContent = message;
+        messages.appendChild(m);
+      };
+      var sock = new WebSocket("ws://" + location.hostname + ":<%= port %>");
+      // setInterval(() => {
+      //   // reconnect
+      // })
+      sock.addEventListener('open', function (e) { console.log('connected!') });
+      sock.addEventListener('message', e => {
+        appendMessage(e.data)
+      });
+      document.querySelector('#send').addEventListener('click', e => {
+        var message = document.querySelector('#message').value;
+        if (!message.trim()) return;
+        sock.send(message);
+        appendMessage(message);
+        document.querySelector('#message').value = "";
+      })
+    }
+    start();
+  </script>
+</body>
+
+</html>
